@@ -1,0 +1,159 @@
+%Created by Kriston Rickman
+%Date created 07/06/26
+%V1.03
+%Energy based constraint analysis
+%Note:
+
+%/**\
+
+%/*simple concept of the takeoff constraint. formulas have been double
+% checked and have changed base on the developing knowledge on the
+% matter.*\
+
+clearvars
+
+%Initial assumptions of aircraft design
+
+Gravity = 9.81;
+
+p_SL = 1.225;
+p_cruise = 0.905;
+
+Cruise_velocity = 74.594;
+
+C_Dmin = 0.027; % Assumption from Cirrus sr 20
+C_Lmin = 0.3; % Assumption from Cirrus sr 20
+
+Sweep_angle = 3; % Made from assumption
+
+HP_to_watts = 745.7;
+
+%The Design of the aircraft inputs
+%NOTE Measuremnt in HP will be convert to Watts
+
+Engine_power_HP = 180:10:250; % Assumption of Eninge need data
+Span = 11.8:-0.4:9; % assume based on aircraft type
+Wing_area = 15.5:-1.1:7.8; % assume based on aircraft type
+
+Mass_without_wing_skin = 780; % assume based on aircraft type
+Wing_mass_per_volume = 2700; % assumption of mass of GA aluminum
+Wing_skin_thickness = 0.002; % assumption of mass of GA aluminum
+
+% Engine Characteristics calculations
+
+Engine_power_watts = Engine_power_HP .* HP_to_watts;
+
+%Mass of the aircraft and related Geometry calculations
+
+Fuel_spent_ground_to_TO = 0.11;
+Fuel_mass_per_gallon = 2.8; % ARD
+mass_loss_on_TO = Fuel_spent_ground_to_TO .* Fuel_mass_per_gallon;
+
+Wing_skin_area_total = 2 .* Wing_area;
+Wing_skin_volume = Wing_skin_area_total .* Wing_skin_thickness;
+Wing_skin_mass = Wing_skin_volume .* Wing_mass_per_volume;
+
+Mass_aircraft = Mass_without_wing_skin + Wing_skin_mass; % assume based on aircraft type
+Mass_TO = Mass_aircraft - mass_loss_on_TO;
+
+Weight_TO = Mass_TO * Gravity;
+Wing_loading = Weight_TO ./ Wing_area;
+AR_wing = Span.^2 ./ Wing_area;
+
+
+
+
+
+%Aerodynamic calculations
+
+    %Oswald efficiency calculations - Sweep angle calculation decision
+if Sweep_angle == 0
+    e = 1.78 .* (1 - 0.045 .* AR_wing.^0.68) - 0.64;
+elseif Sweep_angle >= 30
+    e = 4.61 .* (1 - 0.045 .* AR_wing.^0.68) .* (cosd(Sweep_angle)).^0.15 - 3.1;
+elseif (Sweep_angle > 0) && (Sweep_angle < 30)
+    e0 = 1.78 .* (1 - 0.045 .* AR_wing.^0.68) - 0.64;
+    e30 = 4.61 .* (1 - 0.045 .* AR_wing.^0.68) .* (cosd(30)).^0.15 - 3.1;
+    e = e0 + (Sweep_angle ./ 30) .* (e30 - e0);
+else
+    error("Sweep angle is out of range")
+end
+    
+    %Full Drag Polar Buildup
+K_1 = 1./(pi.*AR_wing.*e);
+
+C_D0 = C_Dmin + K_1.*C_Lmin.^2;
+
+K_2 = -2.*K_1.*C_Lmin;
+
+%Takeoff constraint assumptions, variables and formulas
+    %variables
+S_G = 502.92; % Ground roll takeoff distance
+K_TO = 1.2;
+C_Lmax_TO = 1.7; % Assumption including flaps, elevator, and wing
+Rolling_friction_coefficient = 0.03;
+Propeller_efficiency_TO = 0.75; % assume based on propeller
+
+    %Velocity formulas
+Velocity_stall = sqrt((2 .* Weight_TO) ./ (p_SL .* Wing_area .* C_Lmax_TO));
+
+Velocity_TO = K_TO * Velocity_stall;
+
+Velocity_avg_TO = Velocity_TO ./ sqrt(2);
+
+    %constraints sub-formulas
+q_avg_TO = 0.5 .* p_SL .* Velocity_avg_TO.^2;
+
+C_L_required_TO = 2 .* Weight_TO ./(p_SL .* Velocity_TO.^2 .* Wing_area);
+
+%/*C_L_ground_TO For a more accurate constraint create a lift coefficient
+%that is specific for ground because the ground and takeoff coefficents
+% are not the same*\
+
+C_DTO = C_D0 + (K_1.*C_L_required_TO.^2) + K_2.*C_L_required_TO;
+
+Lift_TO = 0.5 .* p_SL .* Velocity_TO.^2 .* Wing_area .* C_L_required_TO;
+
+Lift_avg_TO = 0.5 .* p_SL .* Velocity_avg_TO.^2 .* Wing_area .* C_L_required_TO;
+
+Drag_TO = 0.5 .* C_DTO .* p_SL .* Wing_area .* Velocity_TO.^2;
+
+Drag_avg_TO = 0.5 .* p_SL .* Velocity_avg_TO.^2 .* Wing_area .* C_DTO;
+
+Thrust_TO = (Propeller_efficiency_TO .* Engine_power_watts) ./ Velocity_TO;
+
+Acceleration_TO = Velocity_TO.^2 ./ (2 .* S_G);
+
+Thrust_to_Weight_TO = (Acceleration_TO ./ Gravity) + (q_avg_TO .* C_DTO) ./ Wing_loading + Rolling_friction_coefficient .* (1 - (q_avg_TO .* C_L_required_TO) ./ Wing_loading); % Takeoff Constraint
+
+%Creating scatter plot for takeoff constraint
+figure;
+plot(Wing_loading, Thrust_to_Weight_TO, '-');
+
+hold on;
+
+%Climb constraint
+
+%Variables
+
+
+%eqns
+
+B = Mass_TO ./ Mass_aircraft;
+
+Thrust_to_Weight_TO = B/0.5 .* (((K_1 .* B) ./ q_avg_TO) .* (Weight_TO ./ Wing_area) + K_2 + (C_D0 ./ (B ./ q_avg_TO)) .* (1 ./ (Weight_TO ./ Wing_area) + 1 ./ Velocity_TO));
+
+%C_Lcruise = 2 .*Weight_TO./(p_cruise .* Cruise_velocity.^2 .* Wing_area);
+
+%C_Dcruise = C_D0 + (K_1.*C_Lcruise.^2) + K_2.*C_Lcruise;
+
+%Acceleration_horizontal_TO = (Thrust_TO - Drag_TO - Rolling_friction_coefficient .* (Weight_TO - Lift_TO)) ./ Mass_TO; % Horizontal acceleration
+
+plot(Wing_loading, Thrust_to_Weight_TO, '-');
+xlabel('Wing Loading (N/m^2)');
+ylabel('Thrust to Weight Ratio, T/W');
+title('Constraints: T/W vs Wing Loading');
+grid on;
+legend('Takeoff', 'Climb')
+
+hold off;
