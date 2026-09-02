@@ -1,6 +1,6 @@
 %Created by Kriston Rickman
 %Date created 07/06/26
-%V1.00
+%V1.01
 %Energy based constraint analysis
 %Note:
 %/* Rough idea placed on matlab with one constraints using 
