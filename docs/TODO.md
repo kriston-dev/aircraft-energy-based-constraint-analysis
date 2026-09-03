@@ -1,18 +1,10 @@
 Created by Kriston Rickman
 09/01/26
-Updated from V1.08
-
-1. I need to add:
-
-   Cruise constraint
-
-  Turn constraint
-
-  Approach constraint
+Updated from V1.17
 
 
 
-2. Then calculates for stability/trim:
+1. Calculate stability/trim:
    tail volume constraint
    tail moment arm
    tail horizontal area
@@ -20,7 +12,7 @@ Updated from V1.08
    User inputs: AR for vert. and horiz. stabilizer and their taper ratio
    stabilizer span
    find tip chord
-   ...
+   continuation in docs...
 
    Taper ratio for wing
 
@@ -44,7 +36,11 @@ Updated from V1.08
 
    Landing gear vertical loads
 
-  
+   
+
+1.5  Based on all data find Thrust to weight ratio. Change formulas and remove assumptions as much as possible for most accuracy.
+
+
 
 2. I need to add user the options to choose specifically what they want to calculate:
 
@@ -78,8 +74,6 @@ Updated from V1.08
 
   Based on most data find Thrust to weight ratio that fit requirements through using a range of values
 
-  Based on all data find Thrust to weight ratio
-
   Based on most data find Wing load that fit requirements through using a range of values
 
   Based on all data find Wing load
@@ -90,8 +84,7 @@ Updated from V1.08
 
 
 
-3. Change formulas and remove assumptions as much as possible for most accuracy:
-  Validate information so impossible designs do not process
+3. Validate information so impossible designs do not process
   Creates a final design Report that the FAA:
     Basic Geometry
    Weight Data
