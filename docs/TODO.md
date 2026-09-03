@@ -1,17 +1,27 @@
-#Created by Kriston Rickman
-#09/01/26
-#Updated from V1.17
+Created by Kriston Rickman
+
+09/01/26
+
+Updated from V1.17
 
 
 
 1. Calculate stability/trim:
+   
    tail volume constraint
+   
    tail moment arm
+   
    tail horizontal area
+   
    vertical stabilaer area
+   
    User inputs: AR for vert. and horiz. stabilizer and their taper ratio
+   
    stabilizer span
+   
    find tip chord
+   
    continuation in docs...
 
    Taper ratio for wing
@@ -38,7 +48,8 @@
 
    
 
-1.5  Based on all data find Thrust to weight ratio. Change formulas and remove assumptions as much as possible for most accuracy.
+1.5  Based on all data find Thrust to weight ratio. Change formulas and remove assumptions as much as possible for most 
+accuracy.
 
 
 
@@ -83,16 +94,25 @@
   Based on all data find aspect ratio
 
 
+3. Validate information so impossible designs do not process and creates a final design Report that the FAA:
 
-3. Validate information so impossible designs do not process
-  Creates a final design Report that the FAA:
-    Basic Geometry
+   Basic Geometry
+   
    Weight Data
+   
    Propulsion
+   
    Aerodynamics
+   
    Performance
+   
    Stability
+   
    Structural checks
+   
    Constraint result
+   
    Verification such as specific things that passed or failed on limits
+   
    Assumptions/Warnings
+   
