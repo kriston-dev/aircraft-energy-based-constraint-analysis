@@ -1,6 +1,6 @@
 %Created by Kriston Rickman
 %Date created 09/03/26
-%v1_00 for Energy based constraint analysis v1_19
+%v1_01 for Energy based constraint analysis v1_21
 %States 
 %Notes: 
 
@@ -9,9 +9,7 @@
 classdef Aircraft_constraint_states
     enumeration
         MAIN_MENU
-        FIND_TW
-        GET_AIRCRAFT_DATA
-        GET_DESIRED_PERFORMANCE
+        GET_TW_AIRCRAFT_DATA
         CALCULATE_TW
         DISPLAY_TW
         ERROR_STATE
