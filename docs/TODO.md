@@ -2,9 +2,15 @@ Created by Kriston Rickman
 
 09/01/26
 
-Updated from V1.17
+Updated from V1.26
 
+0.5 Saving aircraft data for user so they dont have to repeatedly type in the same information of the same aircraft. Then 
 
+set up the same system for stabilty/trim.
+
+0.75 Add calculation of TW into the calculate_TW function and once no warnings or errors create the graph_TW where it 
+
+switches states to graph the calculated data from user of constraints
 
 1. Calculate stability/trim:
    
@@ -49,6 +55,7 @@ Updated from V1.17
    
 
 1.5  Based on all data find Thrust to weight ratio. Change formulas and remove assumptions as much as possible for most 
+
 accuracy.
 
 
